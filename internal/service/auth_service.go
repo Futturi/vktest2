@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt"
 	"os"
+	"strings"
 	"time"
 	"vktest2/internal/models"
 	"vktest2/internal/repository"
@@ -28,6 +29,15 @@ func (a *Auth_Service) SignUp(user models.User) (int, error) {
 	}
 	if user.Username == "" || len(user.Username) > 40 {
 		return 0, errors.New("incorrect username")
+	}
+	if !strings.ContainsAny(user.Password, "@!$#%^*&-+=/;") {
+		return 0, errors.New("your password mush have 1 of specific elements: @!$#%^*&-+=/;")
+	}
+	if !strings.ContainsAny(user.Password, "QWERTYUIOPASDFGHJKLZXCVBNM") {
+		return 0, errors.New("your password mush have 1 upper symphol")
+	}
+	if strings.ContainsAny(user.Username, "@!$#%^*&-+=/;") {
+		return 0, errors.New("your username is incorrect, no need to put specific symphols")
 	}
 	user = models.User{Username: user.Username, Password: utils.HashPass(user.Password)}
 	return a.repo.SignUp(user)

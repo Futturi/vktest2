@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"github.com/spf13/viper"
-	"github.com/subosito/gotenv"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"vktest2/internal/handler"
 	"vktest2/internal/repository"
 	"vktest2/internal/server"
@@ -12,12 +14,19 @@ import (
 	"vktest2/pkg"
 )
 
+// @title Announcement app
+// @version 1.0
+// @description API Server 4 Announcement Application
+
+// @host localhost:8082
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	logg := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	slog.SetDefault(logg)
-	if err := gotenv.Load(); err != nil {
-		slog.Error("error with godotenv", slog.Any("error", err))
-	}
 	err := InitViper()
 	if err != nil {
 		slog.Error("error while reading config", slog.Any("error", err))
@@ -39,13 +48,33 @@ func main() {
 	servi := service.NewService(repo)
 	handl := handler.NewHandler(servi)
 	serv := new(server.Server)
-	if err := serv.InitServer(viper.GetString("port"), handl.InitHandlers()); err != nil {
-		slog.Error("error while starting server", slog.Any("error", err))
+	go func() {
+		if err := serv.InitServer(viper.GetString("port"), handl.InitHandlers()); err != nil {
+			slog.Error("error while starting server", slog.Any("error", err))
+		}
+	}()
+	logg.Info("statring app in port: ", slog.String("port", viper.GetString("port")))
+
+	if err := pkg.Migrat(viper.GetString("db.host")); err != nil {
+		slog.Error("error with migratedb", slog.Any("error", err))
+	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	logg.Info("shutdown server", slog.String("port", viper.GetString("port")))
+	if err := serv.StopServer(context.Background()); err != nil {
+		slog.Error("error while stopping server", slog.Any("error", err))
+		os.Exit(1)
+	}
+	if err := pkg.ShutDown(db); err != nil {
+		slog.Error("error while closing db", slog.Any("error", err))
+		os.Exit(1)
 	}
 }
 
 func InitViper() error {
-	viper.AddConfigPath("internal/config")
+	viper.AddConfigPath("./")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	return viper.ReadInConfig()

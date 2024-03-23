@@ -14,10 +14,7 @@ const (
 func (h *Handler) CheckIdentity(c *gin.Context) {
 	header := c.GetHeader("Authorization")
 	if header == "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "your auth header is empty",
-		})
-		slog.Info("auth header problem")
+		c.Set(userHeader, "false")
 		return
 	}
 	headerPart := strings.Split(header, " ")

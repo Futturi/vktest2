@@ -11,7 +11,8 @@ CREATE TABLE announcements
     name text,
     body text,
     image text,
-    price int
+    price int,
+    data int
 );
 
 CREATE TABLE users_announcements

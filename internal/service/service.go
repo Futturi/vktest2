@@ -22,4 +22,6 @@ type AuthService interface {
 
 type AnnouncementService interface {
 	CreateAnn(ann models.Annunc, idUser string) (int, error)
+	GetAnnsWithoutAuth(page, sor, sorTo, minP, maxP string) ([]models.AnnuncRes, error)
+	GetAnns(page, sor, sorTo, minP, maxP, idUser string) ([]models.AnnuncARes, error)
 }

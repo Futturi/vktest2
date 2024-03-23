@@ -23,3 +23,7 @@ func InitPostgres(cfg PConfig) (*sqlx.DB, error) {
 	}
 	return conn, nil
 }
+
+func ShutDown(db *sqlx.DB) error {
+	return db.Close()
+}

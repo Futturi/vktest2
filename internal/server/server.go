@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"time"
 )
@@ -17,4 +18,7 @@ func (s *Server) InitServer(port string, handler http.Handler) error {
 		ReadTimeout:  10 * time.Second,
 	}
 	return s.Server.ListenAndServe()
+}
+func (s *Server) StopServer(ctx context.Context) error {
+	return s.Server.Shutdown(ctx)
 }

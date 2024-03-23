@@ -1,0 +1,171 @@
+basePath: /
+definitions:
+  models.Annunc:
+    properties:
+      body:
+        type: string
+      date:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
+  models.AnnuncARes:
+    properties:
+      body:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      your:
+        type: boolean
+    type: object
+  models.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: API Server 4 Announcement Application
+  title: Announcement app
+  version: "1.0"
+paths:
+  /api/:
+    post:
+      consumes:
+      - application/json
+      description: insert announcement
+      operationId: insert-announcement
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Annunc'
+        default:
+          description: ""
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: CreateAnn
+      tags:
+      - announcements
+  /api/{page}:
+    get:
+      consumes:
+      - application/json
+      description: get announcement
+      operationId: get-announcement
+      parameters:
+      - description: data or price, need to know what sort to use
+        in: query
+        name: sort
+        type: string
+      - description: up/down, need to know how to sort values
+        in: query
+        name: sortTo
+        type: string
+      - description: value of min price
+        in: query
+        name: minprice
+        type: string
+      - description: value of max price
+        in: query
+        name: maxprice
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AnnuncARes'
+            type: array
+        default:
+          description: ""
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: GetAnnouncements
+      tags:
+      - announcements
+  /auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: login to account
+      operationId: login-account-user
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        default:
+          description: ""
+          schema:
+            type: string
+      summary: SignIn
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: create account 4 user
+      operationId: create-account-user
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        default:
+          description: ""
+          schema:
+            type: string
+      summary: SingUp
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -28,4 +28,6 @@ type AuthRepo interface {
 
 type AnnouncementRepo interface {
 	CreateAnn(ann models.Annunc, idUser int) (int, error)
+	GetAnnsWithoutAuth(pageInt, minPrice, maxPrice int) ([]models.Annunc, error)
+	GetAnns(pageInt, minPrice, maxPrice, id int) ([]models.AnnuncA, error)
 }

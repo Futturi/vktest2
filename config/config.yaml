@@ -1,7 +1,7 @@
 port: "8082"
 db:
   port: "5432"
-  host: "localhost"
+  host: "postgg"
   username: "root"
   password: "root"
   dbname: "root"

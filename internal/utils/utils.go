@@ -3,10 +3,11 @@ package utils
 import (
 	"crypto/sha1"
 	"fmt"
+	"os"
 )
 
-const (
-	salt = "woregjflqwjeiwqjmfljgvnkrjweoiqopoqghewkasdcknvbjnrwekuwiejlqwnb"
+var (
+	salt = os.Getenv("PASSWORD_SALT")
 )
 
 func HashPass(pass string) string {

@@ -3,14 +3,15 @@ package service
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"os"
 	"time"
 	"vktest2/internal/models"
 	"vktest2/internal/repository"
 	"vktest2/internal/utils"
 )
 
-const (
-	salt = "ijniljew9753nvnalqo3jnbskqo2u57dnveks,cmvjrkwlamckgfk3la,mcmvkrlq;s,cmngjeuqjajdurjfc"
+var (
+	salt = os.Getenv("JWTSALT")
 )
 
 type Auth_Service struct {

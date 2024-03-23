@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/spf13/viper"
+	"github.com/subosito/gotenv"
 	"log/slog"
 	"os"
 	"vktest2/internal/handler"
@@ -14,6 +15,9 @@ import (
 func main() {
 	logg := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	slog.SetDefault(logg)
+	if err := gotenv.Load(); err != nil {
+		slog.Error("error with godotenv", slog.Any("error", err))
+	}
 	err := InitViper()
 	if err != nil {
 		slog.Error("error while reading config", slog.Any("error", err))
@@ -22,7 +26,7 @@ func main() {
 		Username: viper.GetString("db.username"),
 		Port:     viper.GetString("db.port"),
 		Host:     viper.GetString("db.host"),
-		Password: viper.GetString("db.password"), // TODO добавить чтение с env переменной
+		Password: os.Getenv("DB_PASSWORD"),
 		DBName:   viper.GetString("db.dbname"),
 		SSLMode:  viper.GetString("db.sslmode"),
 	}
